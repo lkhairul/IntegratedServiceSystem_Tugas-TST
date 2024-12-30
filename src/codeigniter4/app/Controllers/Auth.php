@@ -13,8 +13,8 @@ class Auth extends Controller
 
         if ($this->request->getMethod() == 'post') {
             $rules = [
-                'email' => 'required|min_length[6]|max_length[50]|valid_email|is_unique[users.email]',
-                'username' => 'required|min_length[3]|max_length[20]|is_unique[users.username]',
+                'email' => 'required|min_length[6]|max_length[50]|valid_email|is_unique[user.email]',
+                'username' => 'required|min_length[3]|max_length[20]|is_unique[user.username]',
                 'password' => 'required|min_length[8]',
                 'password_confirm' => 'matches[password]'
             ];

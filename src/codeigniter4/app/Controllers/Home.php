@@ -2,10 +2,16 @@
 
 namespace App\Controllers;
 
-class Home extends BaseController
+use App\Models\BookModel;
+use CodeIgniter\Controller;
+
+class Home extends Controller
 {
-    public function index(): string
+    public function index()
     {
-        return view('welcome_message');
+        $model = new BookModel();
+        $data['books'] = $model->findAll();
+
+        echo view('home', $data);
     }
 }
