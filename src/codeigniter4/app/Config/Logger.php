@@ -38,7 +38,7 @@ class Logger extends BaseConfig
      *
      * @var int|list<int>
      */
-    public $threshold = (ENVIRONMENT === 'production') ? 4 : 9;
+    public $threshold = 4; // Ensure this is set to a level that includes info and error logs
 
     /**
      * --------------------------------------------------------------------------
@@ -88,10 +88,10 @@ class Logger extends BaseConfig
                 'alert',
                 'emergency',
                 'debug',
-                'error',
                 'info',
                 'notice',
                 'warning',
+                'error',
             ],
 
             /*
@@ -118,6 +118,21 @@ class Logger extends BaseConfig
              * Specify a different destination here, if desired.
              */
             'path' => '',
+
+            /*
+             * The date format for log entries.
+             */
+            'dateFormat' => 'Y-m-d H:i:s',
+
+            /*
+             * The maximum number of log files to keep.
+             */
+            'maxFiles' => 0,
+
+            /*
+             * The name of the log file.
+             */
+            'fileName' => '',
         ],
 
         /*

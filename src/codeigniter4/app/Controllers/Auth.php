@@ -11,7 +11,10 @@ class Auth extends Controller
         helper(['form']);
         $data = [];
 
+        log_message('info', 'Register method called');
+
         if ($this->request->getMethod() == 'post') {
+            log_message('info', 'Register form submitted');
             $rules = [
                 'email' => 'required|min_length[6]|max_length[50]|valid_email|is_unique[user.email]',
                 'username' => 'required|min_length[3]|max_length[20]|is_unique[user.username]',
@@ -20,6 +23,7 @@ class Auth extends Controller
             ];
 
             if ($this->validate($rules)) {
+                log_message('info', 'Validation passed');
                 $model = new UserModel();
                 $newData = [
                     'email' => $this->request->getVar('email'),
@@ -27,8 +31,10 @@ class Auth extends Controller
                     'password' => $this->request->getVar('password'),
                 ];
                 $model->save($newData);
+                log_message('info', 'User registered successfully');
                 return redirect()->to('/auth/login');
             } else {
+                log_message('error', 'Validation failed: ' . json_encode($this->validator->getErrors()));
                 $data['validation'] = $this->validator;
             }
         }
