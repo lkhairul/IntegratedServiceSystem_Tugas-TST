@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Controllers;
 
 use App\Models\UserModel;
@@ -8,38 +9,36 @@ class Auth extends Controller
 {
     public function register()
     {
-        helper(['form']);
-        $data = [];
+        helper(['form', 'url']);
 
-        log_message('info', 'Register method called');
+        $validation = \Config\Services::validation();
 
-        if ($this->request->getMethod() == 'post') {
-            log_message('info', 'Register form submitted');
-            $rules = [
-                'email' => 'required|min_length[6]|max_length[50]|valid_email|is_unique[user.email]',
-                'username' => 'required|min_length[3]|max_length[20]|is_unique[user.username]',
-                'password' => 'required|min_length[8]',
-                'password_confirm' => 'matches[password]'
+        $validation->setRules([
+            'username' => 'required',
+            'email' => 'required|valid_email',
+            'password' => 'required|min_length[6]',
+            'confirm_password' => 'required|matches[password]'
+        ]);
+
+        if ($validation->withRequest($this->request)->run() == false) {
+            return view('register', ['validation' => $validation]);
+        } else {
+            $userModel = new UserModel();
+            $data = [
+                'username' => $this->request->getPost('username'),
+                'email' => $this->request->getPost('email'),
+                'password' => md5($this->request->getPost('password'))
             ];
 
-            if ($this->validate($rules)) {
-                log_message('info', 'Validation passed');
-                $model = new UserModel();
-                $newData = [
-                    'email' => $this->request->getVar('email'),
-                    'username' => $this->request->getVar('username'),
-                    'password' => $this->request->getVar('password'),
-                ];
-                $model->save($newData);
-                log_message('info', 'User registered successfully');
-                return redirect()->to('/auth/login');
-            } else {
-                log_message('error', 'Validation failed: ' . json_encode($this->validator->getErrors()));
-                $data['validation'] = $this->validator;
-            }
-        }
+            $userModel->save($data);
 
-        echo view('register', $data);
+            // Set user session
+            $user = $userModel->where('email', $this->request->getPost('email'))->first();
+            $this->setUserSession($user);
+
+            // Redirect to the profile page after successful registration
+            return redirect()->to('/profile');
+        }
     }
 
     public function login()
@@ -50,7 +49,7 @@ class Auth extends Controller
         if ($this->request->getMethod() == 'post') {
             $rules = [
                 'email_or_username' => 'required',
-                'password' => 'required|min_length[8]|max_length[255]|validateUser[email_or_username,password]',
+                'password' => 'required|min_length[6]|validateUser[email_or_username,password]',
             ];
 
             $errors = [
