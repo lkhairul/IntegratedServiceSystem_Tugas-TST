@@ -8,7 +8,6 @@
             text-transform: capitalize;
         }
     </style>
-    <?= view('styles') ?>
 </head>
 <body>
 <?= view('navbar') ?>
