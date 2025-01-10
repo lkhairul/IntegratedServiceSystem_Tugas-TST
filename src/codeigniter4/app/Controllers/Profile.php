@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Controllers;
 
 use App\Models\UserModel;
@@ -8,50 +9,59 @@ class Profile extends Controller
 {
     public function index()
     {
-        $data = [];
-        $model = new UserModel();
-        $data['user'] = $model->find(session()->get('user_id'));
+        $session = session();
+        $userModel = new UserModel();
+        $data['user'] = $userModel->find($session->get('user_id'));
 
-        echo view('profile', $data);
+        return view('profile', $data);
     }
 
     public function update()
     {
-        helper(['form']);
-        $data = [];
+        helper(['form', 'url']);
 
-        if ($this->request->getMethod() == 'post') {
-            $rules = [
-                'username' => 'required|min_length[3]|max_length[20]',
-                'password' => 'permit_empty|min_length[8]',
-                'password_confirm' => 'matches[password]',
-                'latitude' => 'permit_empty|decimal',
-                'longitude' => 'permit_empty|decimal'
+        $validation = \Config\Services::validation();
+
+        $validation->setRules([
+            'username' => 'required',
+            'password' => 'permit_empty|min_length[6]',
+            'password_confirm' => 'matches[password]',
+            'latitude' => 'required|decimal|greater_than_equal_to[-90]|less_than_equal_to[90]',
+            'longitude' => 'required|decimal|greater_than_equal_to[-180]|less_than_equal_to[180]'
+        ]);
+
+        if ($validation->withRequest($this->request)->run() == false) {
+            $session = session();
+            $userModel = new UserModel();
+            $data['user'] = $userModel->find($session->get('user_id'));
+            $data['validation'] = $validation;
+
+            return view('profile', $data);
+        } else {
+            $session = session();
+            $userModel = new UserModel();
+
+            $latitude = $this->request->getPost('latitude') !== '' ? $this->request->getPost('latitude') : null;
+            $longitude = $this->request->getPost('longitude') !== '' ? $this->request->getPost('longitude') : null;
+
+            $userData = [
+                'username' => $this->request->getPost('username'),
+                'latitude' => $latitude,
+                'longitude' => $longitude,
             ];
 
-            if ($this->validate($rules)) {
-                $model = new UserModel();
-                $userData = [
-                    'user_id' => session()->get('user_id'),
-                    'username' => $this->request->getVar('username'),
-                    'latitude' => $this->request->getVar('latitude'),
-                    'longitude' => $this->request->getVar('longitude'),
-                ];
-
-                if ($this->request->getVar('password') != '') {
-                    $userData['password'] = $this->request->getVar('password');
-                }
-
-                $model->save($userData);
-                return redirect()->to('/profile');
-            } else {
-                $data['validation'] = $this->validator;
+            // Jika password diisi, tambahkan ke data update
+            if ($this->request->getPost('password')) {
+                $userData['password'] = md5($this->request->getPost('password'));
             }
+
+            // Update data di database
+            $userModel->update($session->get('user_id'), $userData);
+
+            // Perbarui data sesi jika username berubah
+            $session->set('username', $userData['username']);
+
+            return redirect()->to('/profile');
         }
-
-        $model = new UserModel();
-        $data['user'] = $model->find(session()->get('user_id'));
-
-        echo view('profile', $data);
     }
 }

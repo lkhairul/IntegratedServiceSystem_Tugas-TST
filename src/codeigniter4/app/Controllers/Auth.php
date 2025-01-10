@@ -43,36 +43,28 @@ class Auth extends Controller
 
     public function login()
     {
-        helper(['form']);
-        $data = [];
-
-        if ($this->request->getMethod() == 'post') {
-            $rules = [
-                'email_or_username' => 'required',
-                'password' => 'required|min_length[6]|validateUser[email_or_username,password]',
-            ];
-
-            $errors = [
-                'password' => [
-                    'validateUser' => 'Email/Username or Password don\'t match'
-                ]
-            ];
-
-            if ($this->validate($rules, $errors)) {
-                $model = new UserModel();
-                $user = $model->where('email', $this->request->getVar('email_or_username'))
-                              ->orWhere('username', $this->request->getVar('email_or_username'))
-                              ->first();
-
-                $this->setUserSession($user);
-                return redirect()->to('/profile');
-            } else {
-                $data['validation'] = $this->validator;
-            }
+        helper(['form', 'url']);
+        $model = new UserModel();
+    
+        $emailOrUsername = $this->request->getPost('email_or_username');
+        $password = $this->request->getPost('password');
+    
+        // Cari pengguna berdasarkan email atau username
+        $user = $model->where('email', $emailOrUsername)
+                      ->orWhere('username', $emailOrUsername)
+                      ->first();
+    
+        // Validasi pengguna dan password
+        if ($user && md5($password) === $user['password']) {
+            $this->setUserSession($user);
+            return redirect()->to('/profile'); // Redirect berhasil
+        } else {
+            return view('login', [
+                'error' => 'Email/Username atau Password salah.'
+            ]);
         }
-
-        echo view('login', $data);
     }
+    
 
     private function setUserSession($user)
     {

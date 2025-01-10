@@ -6,8 +6,9 @@ use CodeIgniter\Model;
 
 class UserModel extends Model
 {
-    protected $table = 'user';
-    protected $primaryKey = 'user_id';
-    protected $allowedFields = ['username', 'email', 'password'];
+    protected $table = 'user'; // Pastikan nama tabel benar
+    protected $primaryKey = 'user_id'; // Primary key tabel
+    protected $allowedFields = ['username', 'email', 'password', 'latitude', 'longitude']; // Tambahkan latitude dan longitude
     protected $useTimestamps = false;
 }
+
