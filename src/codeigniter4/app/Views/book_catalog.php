@@ -48,7 +48,6 @@
             <?php foreach ($books as $book): ?>
             <div class="col-md-4 mb-4">
                 <div class="card">
-                    <img src="public/book_template.png" class="card-img-top" alt="Book Cover">
                     <div class="card-body">
                         <h5 class="card-title"><?= esc(ucwords($book['title'])) ?></h5>
                         <p class="card-text"><?= esc(implode(', ', json_decode($book['genres'], true))) ?></p>
