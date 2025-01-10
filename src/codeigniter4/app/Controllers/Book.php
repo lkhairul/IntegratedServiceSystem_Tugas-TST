@@ -4,7 +4,6 @@ namespace App\Controllers;
 
 use App\Models\BookModel;
 use App\Models\UserModel;
-use App\Models\PerpusModel;
 use CodeIgniter\Controller;
 
 class Book extends Controller
@@ -36,9 +35,6 @@ class Book extends Controller
         $userId = $session->get('user_id');
 
         $bookModel = new BookModel();
-        $userModel = new UserModel();
-        $perpusModel = new PerpusModel();
-
         $book = $bookModel->find($id);
         
         if (!$book) {
@@ -46,52 +42,15 @@ class Book extends Controller
         }
 
         $user = null;
-        $libraries = [];
         if ($userId) {
+            $userModel = new UserModel();
             $user = $userModel->find($userId);
-
-            if ($user && !empty($book['perpus'])) {
-                $perpusIds = json_decode($book['perpus'], true);
-                $libraries = $perpusModel->whereIn('perpus_id', $perpusIds)->findAll();
-
-                // Calculate distances
-                foreach ($libraries as &$library) {
-                    $library['distance'] = $this->calculateDistance(
-                        $user['latitude'], $user['longitude'],
-                        $library['latitude'], $library['longitude']
-                    );
-                }
-
-                // Sort libraries by distance
-                usort($libraries, function($a, $b) {
-                    return $a['distance'] <=> $b['distance'];
-                });
-            }
         }
 
         return view('book_details', [
             'book' => $book,
-            'user' => $user,
-            'libraries' => $libraries
+            'user' => $user
         ]);
-    }
-
-    private function calculateDistance($lat1, $lon1, $lat2, $lon2)
-    {
-        $earthRadius = 6371; // Radius of the earth in km
-
-        $latDistance = deg2rad($lat2 - $lat1);
-        $lonDistance = deg2rad($lon2 - $lon1);
-
-        $a = sin($latDistance / 2) * sin($latDistance / 2) +
-            cos(deg2rad($lat1)) * cos(deg2rad($lat2)) *
-            sin($lonDistance / 2) * sin($lonDistance / 2);
-
-        $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
-
-        $distance = $earthRadius * $c; // Distance in km
-
-        return $distance;
     }
 
     public function management()

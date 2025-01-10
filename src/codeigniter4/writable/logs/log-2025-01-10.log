@@ -62,6 +62,7 @@ CRITICAL - 2025-01-10 08:53:48 --> ErrorException: Type of App\Models\BookModel:
 [Method: GET, Route: /]
 in APPPATH\Models\BookModel.php on line 6.
  1 [internal function]: CodeIgniter\Debug\Exceptions->shutdownHandler()
+<<<<<<< HEAD:src/mybooklist/writable/logs/log-2025-01-10.log
 CRITICAL - 2025-01-10 09:29:13 --> ErrorException: Undefined variable $mostBorrowedGenre
 [Method: GET, Route: /]
 in APPPATH\Views\home.php on line 29.
@@ -190,3 +191,5 @@ in SYSTEMPATH\Exceptions\FrameworkException.php on line 41.
 12 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
 13 FCPATH\index.php(56): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
 14 SYSTEMPATH\rewrite.php(44): require_once('C:\\Users\\ffuvi\\Documents\\GitHub\\IntegratedServiceSystem_Tugas-TST\\src\\mybooklist\\public\\index.php')
+=======
+>>>>>>> parent of c730523 (update):src/codeigniter4/writable/logs/log-2025-01-10.log
