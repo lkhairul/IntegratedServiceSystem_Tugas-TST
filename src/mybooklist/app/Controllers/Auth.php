@@ -36,7 +36,7 @@ class Auth extends Controller
             $user = $userModel->where('email', $this->request->getPost('email'))->first();
             $this->setUserSession($user);
 
-            // Redirect to the profile page after successful registration
+            // Redirect 
             return redirect()->to('/profile');
         }
     }
@@ -48,8 +48,7 @@ class Auth extends Controller
     
         $emailOrUsername = $this->request->getPost('email_or_username');
         $password = $this->request->getPost('password');
-    
-        // Cari pengguna berdasarkan email atau username
+
         $user = $model->where('email', $emailOrUsername)
                       ->orWhere('username', $emailOrUsername)
                       ->first();
@@ -57,7 +56,7 @@ class Auth extends Controller
         // Validasi pengguna dan password
         if ($user && md5($password) === $user['password']) {
             $this->setUserSession($user);
-            return redirect()->to('/profile'); // Redirect berhasil
+            return redirect()->to('/profile'); 
         } else {
             return view('login', [
                 'error' => 'Email/Username atau Password salah.'
