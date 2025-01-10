@@ -20,7 +20,11 @@
 # APP
 #--------------------------------------------------------------------
 
+<<<<<<< HEAD
 # app.baseURL = 'https://tstmybooklist.fwh.is/'
+=======
+# app.baseURL = ''
+>>>>>>> parent of baa28e8 (change name)
 # If you have trouble with `.`, you could also use `_`.
 # app_baseURL = ''
 # app.forceGlobalSecureRequests = false
